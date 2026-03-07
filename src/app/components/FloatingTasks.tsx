@@ -15,8 +15,8 @@ interface Burst {
 }
 
 const COLORS = [
-  "#FF6B6B", "#4ECDC4", "#FFD93D", "#95E1D3",
-  "#F38181", "#AA96DA", "#FCBAD3", "#A8D8EA",
+  "#B33A3A", "#2A8A84", "#B8860B", "#4A9E8E",
+  "#A84848", "#6B4FA8", "#C0608A", "#4A88A8",
 ];
 
 export function FloatingTasks() {
