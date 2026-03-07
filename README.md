@@ -16,6 +16,11 @@
 ```bash
 npm i
 npm run dev
+
+ビルド
+npm run build
+デプロイ
+npx wrangler pages deploy dist --project-name todospace
 ```
 
 ## 技術スタック
