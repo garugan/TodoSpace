@@ -4,6 +4,7 @@ import { Check, Menu, X, List, Plus, Info } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "./ui/button";
 import { taskStore, type Task } from "../taskStore";
+import { FaXTwitter, FaLine, FaLink } from "react-icons/fa6";
 
 interface Burst {
   id: string;
@@ -24,6 +25,14 @@ export function FloatingTasks() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
   const [newText, setNewText] = useState("");
   const stars = useMemo(() =>
     Array.from({ length: 120 }, (_, i) => ({
@@ -498,6 +507,37 @@ export function FloatingTasks() {
                 <p className="text-white/80 text-sm leading-relaxed">
                   忘れてしまいそうなことを宇宙へ放り出しておけば、ふとした瞬間に目に入って思い出せます。急がなくていい、でも忘れたくないタスクを書いて、宇宙へ漂流させましょう。
                 </p>
+                {/* SNS共有 */}
+                <div className="space-y-2">
+                  <p className="text-white/30 text-xs">シェアする</p>
+                  <div className="flex gap-2">
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("優先度は低いけど、いつかやりたいことを宇宙に漂わせておくアプリ「Todospace」")}&url=${encodeURIComponent(window.location.href)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors"
+                    >
+                      <FaXTwitter className="h-4 w-4" />
+                    </a>
+                    <a
+                      href={`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors"
+                    >
+                      <FaLine className="h-4 w-4" />
+                    </a>
+                    <button
+                      onClick={handleCopyUrl}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium transition-colors"
+                      style={{ color: copied ? "#86efac" : "white" }}
+                    >
+                      <FaLink className="h-4 w-4" />
+                      {copied ? "完了" : "コピー"}
+                    </button>
+                  </div>
+                </div>
+
                 <button
                   onClick={() => setAboutOpen(false)}
                   className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors text-sm"
