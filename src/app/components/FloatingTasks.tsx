@@ -45,6 +45,7 @@ export function FloatingTasks() {
       opacity: 0.3 + Math.random() * 0.7,
     })), []);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [vpCenter, setVpCenter] = useState<number | null>(null);
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>(0);
@@ -58,6 +59,21 @@ export function FloatingTasks() {
   useEffect(() => {
     setTasks(taskStore.load());
   }, []);
+
+  // モーダル表示中にvisualViewportの中央を追跡（キーボード対策）
+  useEffect(() => {
+    if (!addModalOpen) { setVpCenter(null); return; }
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => setVpCenter(vv.offsetTop + vv.height / 2);
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, [addModalOpen]);
 
   // ドラッグ処理
   useEffect(() => {
@@ -453,7 +469,8 @@ export function FloatingTasks() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ duration: 0.2 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm px-6 z-50"
+              className="fixed left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm px-6 z-50"
+              style={{ top: vpCenter ?? "50%" }}
             >
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-2xl">
                 <h2 className="text-white font-bold text-lg mb-4">タスクを追加</h2>
