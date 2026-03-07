@@ -1,11 +1,27 @@
+# Todospace
 
-  # スマートフォン用TODOアプリ
+優先度は低いけれど、いつかはやっておきたいこと——そんなタスクを宇宙空間に漂わせておくアプリです。
 
-  This is a code bundle for スマートフォン用TODOアプリ. The original project is available at https://www.figma.com/design/0K69dUHNz5g71sogj9XgzK/%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E7%94%A8TODO%E3%82%A2%E3%83%97%E3%83%AA.
+急がなくていい、でも忘れたくないタスクを書いて宇宙へ漂流させましょう。ふとした瞬間に目に入って、やるべきことを思い出せます。
 
-  ## Running the code
+## 使い方
 
-  Run `npm i` to install the dependencies.
+1. 右上の `+` ボタンからタスクを追加
+2. タスクが宇宙空間に浮かんで漂流し始める
+3. 完了したタスクはチェックボタンで完了にする
+4. 左上のメニューからタスク一覧を確認
 
-  Run `npm run dev` to start the development server.
-  
+## 開発
+
+```bash
+npm i
+npm run dev
+```
+
+## 技術スタック
+
+- React 18 + TypeScript
+- Vite 6
+- Tailwind CSS v4
+- shadcn/ui
+- motion/react

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router";
-import { Check, Menu, X, List, Plus } from "lucide-react";
+import { Check, Menu, X, List, Plus, Info } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "./ui/button";
 
@@ -24,6 +24,7 @@ export function FloatingTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [newText, setNewText] = useState("");
   const stars = useMemo(() =>
     Array.from({ length: 50 }, (_, i) => ({
@@ -325,6 +326,13 @@ export function FloatingTasks() {
                 <List className="h-4 w-4" />
                 タスク
               </button>
+              <button
+                onClick={() => { setAboutOpen(true); setMenuOpen(false); }}
+                className="w-full flex items-center gap-3 px-5 py-4 text-white hover:bg-white/20 transition-colors text-left"
+              >
+                <Info className="h-4 w-4" />
+                このアプリについて
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -394,6 +402,49 @@ export function FloatingTasks() {
                     </button>
                   </div>
                 </form>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* このアプリについてモーダル */}
+      <AnimatePresence>
+        {aboutOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              onClick={() => setAboutOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm px-6 z-50"
+            >
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-white font-bold text-lg">Todospace とは</h2>
+                  <button onClick={() => setAboutOpen(false)} className="text-white/50 hover:text-white transition-colors">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <p className="text-white/80 text-sm leading-relaxed">
+                  優先度は低いけれど、いつかはやっておきたいこと——そんなタスクを宇宙空間に漂わせておくアプリです。
+                </p>
+                <p className="text-white/80 text-sm leading-relaxed">
+                  忘れてしまいそうなことを宇宙へ放り出しておけば、ふとした瞬間に目に入って思い出せます。急がなくていい、でも忘れたくないタスクを書いて、宇宙へ漂流させましょう。
+                </p>
+                <button
+                  onClick={() => setAboutOpen(false)}
+                  className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors text-sm"
+                >
+                  閉じる
+                </button>
               </div>
             </motion.div>
           </>
