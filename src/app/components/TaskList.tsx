@@ -184,6 +184,16 @@ export function TaskList() {
           </div>
         </div>
       )}
+
+      <div className="mt-auto px-6 pb-6 pt-2 text-center text-xs text-white/40">
+        <button onClick={() => navigate("/privacy")} className="hover:text-white/80 transition-colors">
+          プライバシーポリシー
+        </button>
+        <span className="mx-2">|</span>
+        <button onClick={() => navigate("/contact")} className="hover:text-white/80 transition-colors">
+          お問い合わせ
+        </button>
+      </div>
     </div>
   );
 }

@@ -401,6 +401,19 @@ export function FloatingTasks() {
                 <Info className="h-4 w-4 opacity-70" />
                 このアプリについて
               </button>
+              <div className="mx-4 border-t border-white/10" />
+              <button
+                onClick={() => { navigate("/privacy"); setMenuOpen(false); }}
+                className="w-full px-5 py-3 text-left text-xs text-white/60 hover:bg-white/20 hover:text-white transition-colors"
+              >
+                プライバシーポリシー
+              </button>
+              <button
+                onClick={() => { navigate("/contact"); setMenuOpen(false); }}
+                className="w-full px-5 pb-3 pt-1 text-left text-xs text-white/60 hover:bg-white/20 hover:text-white transition-colors"
+              >
+                お問い合わせ
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
