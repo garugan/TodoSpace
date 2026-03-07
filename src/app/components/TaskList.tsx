@@ -4,6 +4,8 @@ import { ArrowLeft, Trash2, Plus, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
+const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
 interface Task {
   id: string;
   text: string;
@@ -13,6 +15,7 @@ interface Task {
   vx: number;
   vy: number;
   completed?: boolean;
+  completedAt?: number;
 }
 
 const COLORS = [
@@ -23,12 +26,21 @@ const COLORS = [
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newText, setNewText] = useState("");
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem("tasks");
     if (stored) {
-      setTasks(JSON.parse(stored));
+      const parsed: Task[] = JSON.parse(stored);
+      const now = Date.now();
+      const filtered = parsed.filter(
+        (t) => !t.completed || !t.completedAt || now - t.completedAt < ONE_WEEK_MS
+      );
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem("tasks", JSON.stringify(filtered));
+      }
+      setTasks(filtered);
     }
   }, []);
 
@@ -52,7 +64,7 @@ export function TaskList() {
 
   const completeTask = (id: string) => {
     const updated = tasks.map((t) =>
-      t.id === id ? { ...t, completed: true } : t
+      t.id === id ? { ...t, completed: true, completedAt: Date.now() } : t
     );
     setTasks(updated);
     localStorage.setItem("tasks", JSON.stringify(updated));
@@ -60,6 +72,12 @@ export function TaskList() {
 
   const deleteTask = (id: string) => {
     const updated = tasks.filter((t) => t.id !== id);
+    setTasks(updated);
+    localStorage.setItem("tasks", JSON.stringify(updated));
+  };
+
+  const clearCompleted = () => {
+    const updated = tasks.filter((t) => !t.completed);
     setTasks(updated);
     localStorage.setItem("tasks", JSON.stringify(updated));
   };
@@ -134,7 +152,18 @@ export function TaskList() {
       {/* 完了リスト */}
       {tasks.filter((t) => t.completed).length > 0 && (
         <div className="px-6 pb-8">
-          <p className="text-white/40 text-sm font-medium mb-3">完了済み</p>
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-white/40 text-sm font-medium">完了済み</p>
+              <p className="text-white/25 text-xs">完了から1週間後に自動削除</p>
+            </div>
+            <button
+              onClick={() => setClearConfirmOpen(true)}
+              className="text-white/30 hover:text-red-400 transition-colors text-xs"
+            >
+              全て削除
+            </button>
+          </div>
           <div className="space-y-2">
             {tasks.filter((t) => t.completed).map((task) => (
               <div
@@ -156,6 +185,29 @@ export function TaskList() {
         </div>
       )}
 
+      {/* 全削除確認モーダル */}
+      {clearConfirmOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-6">
+          <div className="bg-slate-800 border border-white/10 rounded-3xl p-6 w-full max-w-sm shadow-2xl space-y-4">
+            <h2 className="text-white font-bold text-lg">完了済みタスクを全て削除しますか？</h2>
+            <p className="text-white/50 text-sm">この操作は元に戻せません。</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setClearConfirmOpen(false)}
+                className="flex-1 py-3 rounded-xl border border-white/20 text-white/70 hover:bg-white/10 transition-colors text-sm"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={() => { clearCompleted(); setClearConfirmOpen(false); }}
+                className="flex-1 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition-colors text-sm"
+              >
+                削除する
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

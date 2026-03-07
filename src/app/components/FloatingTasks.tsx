@@ -4,6 +4,8 @@ import { Check, Menu, X, List, Plus, Info } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "./ui/button";
 
+const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
 interface Task {
   id: string;
   text: string;
@@ -13,6 +15,7 @@ interface Task {
   vx: number;
   vy: number;
   completed?: boolean;
+  completedAt?: number;
 }
 
 interface Burst {
@@ -60,7 +63,15 @@ export function FloatingTasks() {
     const loadTasks = () => {
       const stored = localStorage.getItem("tasks");
       if (stored) {
-        setTasks(JSON.parse(stored));
+        const parsed: Task[] = JSON.parse(stored);
+        const now = Date.now();
+        const filtered = parsed.filter(
+          (t) => !t.completed || !t.completedAt || now - t.completedAt < ONE_WEEK_MS
+        );
+        if (filtered.length !== parsed.length) {
+          localStorage.setItem("tasks", JSON.stringify(filtered));
+        }
+        setTasks(filtered);
       }
     };
     
@@ -180,7 +191,7 @@ export function FloatingTasks() {
       }, 1000);
     }
     const updatedTasks = tasks.map((t) =>
-      t.id === id ? { ...t, completed: true } : t
+      t.id === id ? { ...t, completed: true, completedAt: Date.now() } : t
     );
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
