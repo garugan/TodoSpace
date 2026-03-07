@@ -27,12 +27,14 @@ export function FloatingTasks() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [newText, setNewText] = useState("");
   const stars = useMemo(() =>
-    Array.from({ length: 50 }, (_, i) => ({
+    Array.from({ length: 120 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
       top: Math.random() * 100,
-      delay: Math.random() * 3,
-      duration: 2 + Math.random() * 3,
+      delay: Math.random() * 5,
+      duration: 2 + Math.random() * 4,
+      size: Math.random() < 0.7 ? 1 : Math.random() < 0.85 ? 2 : 3,
+      opacity: 0.3 + Math.random() * 0.7,
     })), []);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -223,16 +225,34 @@ export function FloatingTasks() {
   }, [tasks]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0d0318] to-black relative overflow-hidden">
-      {/* 背景の星 */}
-      <div className="absolute inset-0 opacity-30">
+    <div className="min-h-screen bg-[#03000f] relative overflow-hidden">
+      {/* 背景グラデーション */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0a001a] via-[#03000f] to-[#000510]" />
+
+      {/* 星雲（ネビュラ）効果 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="nebula-1 absolute w-[500px] h-[500px] rounded-full opacity-10 blur-[100px]"
+          style={{ background: "radial-gradient(circle, #7c3aed, transparent 70%)", top: "-10%", left: "-10%" }} />
+        <div className="nebula-2 absolute w-[400px] h-[400px] rounded-full opacity-10 blur-[80px]"
+          style={{ background: "radial-gradient(circle, #1d4ed8, transparent 70%)", bottom: "10%", right: "-5%" }} />
+        <div className="nebula-3 absolute w-[300px] h-[300px] rounded-full opacity-10 blur-[60px]"
+          style={{ background: "radial-gradient(circle, #be185d, transparent 70%)", top: "40%", left: "30%" }} />
+      </div>
+
+      {/* 星 */}
+      <div className="absolute inset-0">
         {stars.map((star) => (
           <div
             key={star.id}
-            className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+            className="absolute rounded-full animate-pulse"
             style={{
               left: `${star.left}%`,
               top: `${star.top}%`,
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              opacity: star.opacity,
+              backgroundColor: star.size === 3 ? "#ffe9a0" : "#ffffff",
+              boxShadow: star.size === 3 ? `0 0 ${star.size * 3}px #ffe9a0` : "none",
               animationDelay: `${star.delay}s`,
               animationDuration: `${star.duration}s`,
             }}
