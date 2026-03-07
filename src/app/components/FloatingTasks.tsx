@@ -15,6 +15,14 @@ interface Task {
   completed?: boolean;
 }
 
+interface Burst {
+  id: string;
+  x: number;
+  y: number;
+  color: string;
+  particles: Array<{ id: number; angle: number; distance: number; size: number }>;
+}
+
 const COLORS = [
   "#FF6B6B", "#4ECDC4", "#FFD93D", "#95E1D3",
   "#F38181", "#AA96DA", "#FCBAD3", "#A8D8EA",
@@ -22,6 +30,7 @@ const COLORS = [
 
 export function FloatingTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [bursts, setBursts] = useState<Burst[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -151,8 +160,27 @@ export function FloatingTasks() {
 
   // タスクを完了
   const completeTask = (id: string) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === id ? { ...task, completed: true } : task
+    const task = tasks.find((t) => t.id === id);
+    if (task) {
+      const burst: Burst = {
+        id: Date.now().toString(),
+        x: task.x,
+        y: task.y,
+        color: task.color,
+        particles: Array.from({ length: 14 }, (_, i) => ({
+          id: i,
+          angle: (i / 14) * 360 + Math.random() * 20 - 10,
+          distance: 60 + Math.random() * 60,
+          size: Math.random() < 0.5 ? 4 : Math.random() < 0.8 ? 6 : 8,
+        })),
+      };
+      setBursts((prev) => [...prev, burst]);
+      setTimeout(() => {
+        setBursts((prev) => prev.filter((b) => b.id !== burst.id));
+      }, 1000);
+    }
+    const updatedTasks = tasks.map((t) =>
+      t.id === id ? { ...t, completed: true } : t
     );
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
@@ -307,6 +335,35 @@ export function FloatingTasks() {
             </div>
           </motion.div>
         ))}
+
+        {/* バースト（星が弾ける演出） */}
+        {bursts.map((burst) =>
+          burst.particles.map((p) => {
+            const rad = (p.angle * Math.PI) / 180;
+            const tx = Math.cos(rad) * p.distance;
+            const ty = Math.sin(rad) * p.distance;
+            return (
+              <motion.div
+                key={`${burst.id}-${p.id}`}
+                className="absolute rounded-full pointer-events-none"
+                style={{
+                  left: `${burst.x}%`,
+                  top: `${burst.y}%`,
+                  width: p.size,
+                  height: p.size,
+                  backgroundColor: p.id % 3 === 0 ? "#ffffff" : burst.color,
+                  boxShadow: `0 0 ${p.size * 2}px ${p.id % 3 === 0 ? "#ffffff" : burst.color}`,
+                  translateX: "-50%",
+                  translateY: "-50%",
+                  zIndex: 100,
+                }}
+                initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                animate={{ x: tx, y: ty, opacity: 0, scale: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              />
+            );
+          })
+        )}
       </div>
 
       {/* 空の状態 */}
