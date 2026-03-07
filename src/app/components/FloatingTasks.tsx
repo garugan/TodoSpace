@@ -44,6 +44,7 @@ export function FloatingTasks() {
       size: Math.random() < 0.7 ? 1 : Math.random() < 0.85 ? 2 : 3,
       opacity: 0.3 + Math.random() * 0.7,
     })), []);
+
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [vpCenter, setVpCenter] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -263,36 +264,42 @@ export function FloatingTasks() {
       {/* 背景グラデーション */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a001a] via-[#03000f] to-[#000510]" />
 
-      {/* 星雲（ネビュラ）効果 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="nebula-1 absolute w-[500px] h-[500px] rounded-full opacity-10 blur-[100px]"
-          style={{ background: "radial-gradient(circle, #7c3aed, transparent 70%)", top: "-10%", left: "-10%" }} />
-        <div className="nebula-2 absolute w-[400px] h-[400px] rounded-full opacity-10 blur-[80px]"
-          style={{ background: "radial-gradient(circle, #1d4ed8, transparent 70%)", bottom: "10%", right: "-5%" }} />
-        <div className="nebula-3 absolute w-[300px] h-[300px] rounded-full opacity-10 blur-[60px]"
-          style={{ background: "radial-gradient(circle, #be185d, transparent 70%)", top: "40%", left: "30%" }} />
-      </div>
-
-      {/* 星 */}
-      <div className="absolute inset-0">
-        {stars.map((star) => (
-          <div
-            key={star.id}
-            className="absolute rounded-full animate-pulse"
-            style={{
-              left: `${star.left}%`,
-              top: `${star.top}%`,
-              width: `${star.size}px`,
-              height: `${star.size}px`,
-              opacity: star.opacity,
-              backgroundColor: star.size === 3 ? "#ffe9a0" : "#ffffff",
-              boxShadow: star.size === 3 ? `0 0 ${star.size * 3}px #ffe9a0` : "none",
-              animationDelay: `${star.delay}s`,
-              animationDuration: `${star.duration}s`,
-            }}
-          />
+      {/* スライドループする背景レイヤー（ネビュラ＋星） */}
+      <motion.div
+        className="absolute top-0 left-0 w-[200%] h-full pointer-events-none overflow-hidden"
+        animate={{ x: ["0%", "-50%"] }}
+        transition={{ duration: 500, repeat: Infinity, ease: "linear" }}
+      >
+        {[0, 1].map((tile) => (
+          <div key={tile} className="absolute top-0 h-full w-1/2" style={{ left: `${tile * 50}%` }}>
+            {/* ネビュラ */}
+            <div className="absolute w-[500px] h-[500px] rounded-full opacity-10 blur-[100px]"
+              style={{ background: "radial-gradient(circle, #7c3aed, transparent 70%)", top: "-10%", left: "-10%" }} />
+            <div className="absolute w-[400px] h-[400px] rounded-full opacity-10 blur-[80px]"
+              style={{ background: "radial-gradient(circle, #1d4ed8, transparent 70%)", bottom: "10%", right: "-5%" }} />
+            <div className="absolute w-[300px] h-[300px] rounded-full opacity-10 blur-[60px]"
+              style={{ background: "radial-gradient(circle, #be185d, transparent 70%)", top: "40%", left: "30%" }} />
+            {/* 星 */}
+            {stars.map((star) => (
+              <div
+                key={star.id}
+                className="absolute rounded-full animate-pulse"
+                style={{
+                  left: `${star.left}%`,
+                  top: `${star.top}%`,
+                  width: `${star.size}px`,
+                  height: `${star.size}px`,
+                  opacity: star.opacity,
+                  backgroundColor: star.size === 3 ? "#ffe9a0" : "#ffffff",
+                  boxShadow: star.size === 3 ? `0 0 ${star.size * 3}px #ffe9a0` : "none",
+                  animationDelay: `${star.delay}s`,
+                  animationDuration: `${star.duration}s`,
+                }}
+              />
+            ))}
+          </div>
         ))}
-      </div>
+      </motion.div>
 
       {/* タスクコンテナ */}
       <div ref={containerRef} className="relative w-full h-screen">
