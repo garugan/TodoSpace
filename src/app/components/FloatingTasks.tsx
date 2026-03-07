@@ -409,16 +409,17 @@ export function FloatingTasks() {
             >
               <button
                 onClick={() => { navigate("/list"); setMenuOpen(false); }}
-                className="w-full flex items-center gap-3 px-5 py-4 text-white hover:bg-white/20 transition-colors text-left"
+                className="w-full flex items-center gap-3 px-5 py-3.5 text-sm text-white hover:bg-white/20 transition-colors"
               >
-                <List className="h-4 w-4" />
-                タスク
+                <List className="h-4 w-4 opacity-70" />
+                タスク一覧
               </button>
+              <div className="mx-4 border-t border-white/10" />
               <button
                 onClick={() => { setAboutOpen(true); setMenuOpen(false); }}
-                className="w-full flex items-center gap-3 px-5 py-4 text-white hover:bg-white/20 transition-colors text-left"
+                className="w-full flex items-center gap-3 px-5 py-3.5 text-sm text-white/70 hover:bg-white/20 hover:text-white transition-colors"
               >
-                <Info className="h-4 w-4" />
+                <Info className="h-4 w-4 opacity-70" />
                 このアプリについて
               </button>
             </motion.div>
