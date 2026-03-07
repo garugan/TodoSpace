@@ -384,7 +384,7 @@ export function FloatingTasks() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute top-14 left-0 min-w-[180px] bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-2xl"
+              className="absolute top-14 left-0 min-w-max bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-2xl"
             >
               <button
                 onClick={() => { navigate("/list"); setMenuOpen(false); }}
