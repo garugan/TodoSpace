@@ -520,7 +520,7 @@ export function FloatingTasks() {
                       <FaXTwitter className="h-4 w-4" />
                     </a>
                     <a
-                      href={`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}`}
+                      href={`https://line.me/R/share?text=${encodeURIComponent("優先度は低いけど、いつかやりたいことを宇宙に漂わせておくアプリ「Todospace」\n" + window.location.href)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors"
