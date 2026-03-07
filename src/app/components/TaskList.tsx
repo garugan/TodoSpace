@@ -3,20 +3,7 @@ import { useNavigate } from "react-router";
 import { ArrowLeft, Trash2, Plus, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-
-const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-
-interface Task {
-  id: string;
-  text: string;
-  color: string;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  completed?: boolean;
-  completedAt?: number;
-}
+import { taskStore, type Task } from "../taskStore";
 
 const COLORS = [
   "#FF6B6B", "#4ECDC4", "#FFD93D", "#95E1D3",
@@ -30,18 +17,7 @@ export function TaskList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const stored = localStorage.getItem("tasks");
-    if (stored) {
-      const parsed: Task[] = JSON.parse(stored);
-      const now = Date.now();
-      const filtered = parsed.filter(
-        (t) => !t.completed || !t.completedAt || now - t.completedAt < ONE_WEEK_MS
-      );
-      if (filtered.length !== parsed.length) {
-        localStorage.setItem("tasks", JSON.stringify(filtered));
-      }
-      setTasks(filtered);
-    }
+    setTasks(taskStore.load());
   }, []);
 
   const addTask = (e: React.FormEvent) => {
@@ -58,7 +34,7 @@ export function TaskList() {
     };
     const updated = [...tasks, newTask];
     setTasks(updated);
-    localStorage.setItem("tasks", JSON.stringify(updated));
+    taskStore.set(updated);
     setNewText("");
   };
 
@@ -67,19 +43,19 @@ export function TaskList() {
       t.id === id ? { ...t, completed: true, completedAt: Date.now() } : t
     );
     setTasks(updated);
-    localStorage.setItem("tasks", JSON.stringify(updated));
+    taskStore.set(updated);
   };
 
   const deleteTask = (id: string) => {
     const updated = tasks.filter((t) => t.id !== id);
     setTasks(updated);
-    localStorage.setItem("tasks", JSON.stringify(updated));
+    taskStore.set(updated);
   };
 
   const clearCompleted = () => {
     const updated = tasks.filter((t) => !t.completed);
     setTasks(updated);
-    localStorage.setItem("tasks", JSON.stringify(updated));
+    taskStore.set(updated);
   };
 
   return (

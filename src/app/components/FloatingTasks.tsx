@@ -3,20 +3,7 @@ import { useNavigate } from "react-router";
 import { Check, Menu, X, List, Plus, Info } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "./ui/button";
-
-const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-
-interface Task {
-  id: string;
-  text: string;
-  color: string;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  completed?: boolean;
-  completedAt?: number;
-}
+import { taskStore, type Task } from "../taskStore";
 
 interface Burst {
   id: string;
@@ -58,30 +45,9 @@ export function FloatingTasks() {
   const prevDragPosRef = useRef<{ x: number; y: number } | null>(null);
 
 
-  // タスクを読み込む
+  // タスクを読み込む（ストアにあればそのまま使用、なければlocalStorageから）
   useEffect(() => {
-    const loadTasks = () => {
-      const stored = localStorage.getItem("tasks");
-      if (stored) {
-        const parsed: Task[] = JSON.parse(stored);
-        const now = Date.now();
-        const filtered = parsed.filter(
-          (t) => !t.completed || !t.completedAt || now - t.completedAt < ONE_WEEK_MS
-        );
-        if (filtered.length !== parsed.length) {
-          localStorage.setItem("tasks", JSON.stringify(filtered));
-        }
-        setTasks(filtered);
-      }
-    };
-    
-    loadTasks();
-    // 画面に戻ってきた時に再読み込み
-    window.addEventListener("focus", loadTasks);
-    
-    return () => {
-      window.removeEventListener("focus", loadTasks);
-    };
+    setTasks(taskStore.load());
   }, []);
 
   // ドラッグ処理
@@ -159,12 +125,12 @@ export function FloatingTasks() {
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       x: Math.random() * 70 + 15,
       y: Math.random() * 70 + 15,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: (Math.random() - 0.5) * 0.12,
     };
     const updated = [...tasks, newTask];
+    taskStore.set(updated);
     setTasks(updated);
-    localStorage.setItem("tasks", JSON.stringify(updated));
     setNewText("");
     setAddModalOpen(false);
   };
@@ -193,8 +159,8 @@ export function FloatingTasks() {
     const updatedTasks = tasks.map((t) =>
       t.id === id ? { ...t, completed: true, completedAt: Date.now() } : t
     );
+    taskStore.set(updatedTasks);
     setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   };
 
   // アニメーションループ
@@ -203,7 +169,7 @@ export function FloatingTasks() {
 
     const animate = () => {
       setTasks((prevTasks) => {
-        return prevTasks.map((task) => {
+        const next = prevTasks.map((task) => {
           // ドラッグ中はカーソル座標を使う
           if (task.id === draggingIdRef.current && dragPosRef.current) {
             return {
@@ -215,29 +181,35 @@ export function FloatingTasks() {
             };
           }
 
-          let newX = task.x + task.vx;
-          let newY = task.y + task.vy;
-          let newVx = task.vx;
-          let newVy = task.vy;
+          // 微小なランダム加速でふわふわ感を演出
+          let newVx = task.vx + (Math.random() - 0.5) * 0.008;
+          let newVy = task.vy + (Math.random() - 0.5) * 0.008;
 
-          // 画面端で反射
+          // 最大速度を制限
+          const maxSpeed = 0.18;
+          const speed = Math.sqrt(newVx * newVx + newVy * newVy);
+          if (speed > maxSpeed) {
+            newVx = (newVx / speed) * maxSpeed;
+            newVy = (newVy / speed) * maxSpeed;
+          }
+
+          let newX = task.x + newVx;
+          let newY = task.y + newVy;
+
+          // 画面端で柔らかく反射（少し減衰）
           if (newX <= 5 || newX >= 95) {
-            newVx = -task.vx;
+            newVx = -newVx * 0.7;
             newX = newX <= 5 ? 5 : 95;
           }
           if (newY <= 5 || newY >= 95) {
-            newVy = -task.vy;
+            newVy = -newVy * 0.7;
             newY = newY <= 5 ? 5 : 95;
           }
 
-          return {
-            ...task,
-            x: newX,
-            y: newY,
-            vx: newVx,
-            vy: newVy,
-          };
+          return { ...task, x: newX, y: newY, vx: newVx, vy: newVy };
         });
+        taskStore.updatePositions(next);
+        return next;
       });
 
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -252,16 +224,14 @@ export function FloatingTasks() {
     };
   }, [tasks.length]);
 
-  // 定期的にlocalStorageを更新
+  // 定期的にlocalStorageへ位置を保存
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (tasks.length > 0) {
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-      }
-    }, 5000); // 5秒ごと
-
-    return () => clearInterval(interval);
-  }, [tasks]);
+    const interval = setInterval(() => taskStore.syncToStorage(), 5000);
+    return () => {
+      clearInterval(interval);
+      taskStore.syncToStorage();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#03000f] relative overflow-hidden">
