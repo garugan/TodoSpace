@@ -100,7 +100,7 @@ export function TaskList() {
             <p>タスクがありません</p>
           </div>
         ) : (
-          tasks.filter((t) => !t.completed).map((task) => (
+          tasks.filter((t) => !t.completed).reverse().map((task) => (
             <div
               key={task.id}
               className="flex items-center gap-4 px-5 py-4 rounded-2xl border border-white/10 backdrop-blur-sm"
@@ -141,7 +141,7 @@ export function TaskList() {
             </button>
           </div>
           <div className="space-y-2">
-            {tasks.filter((t) => t.completed).map((task) => (
+            {tasks.filter((t) => t.completed).reverse().map((task) => (
               <div
                 key={task.id}
                 className="flex items-center gap-4 px-5 py-3 rounded-2xl border border-white/5 opacity-50"
