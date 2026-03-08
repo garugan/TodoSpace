@@ -533,7 +533,7 @@ export function FloatingTasks() {
             >
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-2xl space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-white font-bold text-lg">Todospace とは</h2>
+                  <h2 className="text-white font-bold text-lg">TodoSpace とは</h2>
                   <button onClick={() => setAboutOpen(false)} className="text-white/50 hover:text-white transition-colors">
                     <X className="h-5 w-5" />
                   </button>

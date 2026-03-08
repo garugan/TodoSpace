@@ -24,7 +24,7 @@ export function PrivacyPolicy() {
           <section className="space-y-2">
             <h2 className="font-semibold">1. 取得する情報</h2>
             <p className="text-sm text-white/80 leading-relaxed">
-              Todospace は、ユーザーが入力したタスク情報をブラウザ内の
+              TodoSpace は、ユーザーが入力したタスク情報をブラウザ内の
               localStorage に保存します。サーバーへタスク内容を送信・保存しません。
             </p>
           </section>
