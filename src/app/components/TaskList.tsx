@@ -148,7 +148,7 @@ export function TaskList() {
                 style={{ backgroundColor: task.color + "1A" }}
               >
                 <Check className="h-3.5 w-3.5 text-white/60 flex-shrink-0" />
-                <p className="text-white/60 flex-1 break-words line-through text-sm">{task.text}</p>
+                <p className="text-white/60 flex-1 break-words text-sm">{task.text}</p>
                 <button
                   onClick={() => deleteTask(task.id)}
                   className="text-white/30 hover:text-red-400 transition-colors flex-shrink-0"
