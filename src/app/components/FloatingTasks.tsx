@@ -407,11 +407,11 @@ export function FloatingTasks() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute top-14 left-0 min-w-max bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-2xl"
+              className="absolute top-14 left-0 w-48 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-2xl"
             >
               <button
                 onClick={() => { navigate("/list"); setMenuOpen(false); }}
-                className="w-full flex items-center gap-3 px-5 py-3.5 text-sm text-white hover:bg-white/20 transition-colors"
+                className="w-full flex items-center gap-3 pl-4 pr-3 py-3.5 text-sm text-white hover:bg-white/20 transition-colors"
               >
                 <List className="h-4 w-4 opacity-70" />
                 タスク一覧
@@ -419,7 +419,7 @@ export function FloatingTasks() {
               <div className="mx-4 border-t border-white/10" />
               <button
                 onClick={() => { setAboutOpen(true); setMenuOpen(false); }}
-                className="w-full flex items-center gap-3 px-5 py-3.5 text-sm text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+                className="w-full flex items-center gap-3 pl-4 pr-3 py-3.5 text-sm text-white/70 hover:bg-white/20 hover:text-white transition-colors"
               >
                 <Info className="h-4 w-4 opacity-70" />
                 このアプリについて
@@ -427,13 +427,13 @@ export function FloatingTasks() {
               <div className="mx-4 border-t border-white/10" />
               <button
                 onClick={() => { navigate("/privacy"); setMenuOpen(false); }}
-                className="w-full px-5 py-3 text-left text-xs text-white/60 hover:bg-white/20 hover:text-white transition-colors"
+                className="w-full pl-4 pr-3 py-3 text-left text-xs text-white/60 hover:bg-white/20 hover:text-white transition-colors"
               >
                 プライバシーポリシー
               </button>
               <button
                 onClick={() => { navigate("/contact"); setMenuOpen(false); }}
-                className="w-full px-5 pb-3 pt-1 text-left text-xs text-white/60 hover:bg-white/20 hover:text-white transition-colors"
+                className="w-full pl-4 pr-3 pb-3 pt-1 text-left text-xs text-white/60 hover:bg-white/20 hover:text-white transition-colors"
               >
                 お問い合わせ
               </button>
